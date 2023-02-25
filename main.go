@@ -1,16 +1,9 @@
 package main
 
 import (
-	"crypto/rand"
-	"crypto/rsa"
-	"crypto/tls"
-	"crypto/x509"
-	"crypto/x509/pkix"
 	"fmt"
-	"math/big"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -52,13 +45,14 @@ func updateEndPoint(c *gin.Context) {
 }
 
 func main() {
-	tlsConfig := setupTLS()
-
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*.html")
 
 	r.GET("/", baseEndPoint)
 	r.POST("/", updateEndPoint)
+
+	tlsConfig := setupTLS()
+	setupAttestaion(r, tlsConfig)
 
 	server := http.Server{
 		Addr:      serverAddr,
@@ -67,32 +61,8 @@ func main() {
 	}
 
 	fmt.Printf("📎 Token now available under https://%s/token\n", serverAddr)
-	fmt.Printf("👂 Listening on https://%s/secret for secrets...\n", serverAddr)
-
-	server.Handler = r
+	fmt.Printf("👂 Listening on https://%s/...\n", serverAddr)
 
 	err := server.ListenAndServeTLS("", "")
 	fmt.Println(err)
-}
-
-func setupTLS() *tls.Config {
-	template := &x509.Certificate{
-		SerialNumber: &big.Int{},
-		Subject:      pkix.Name{CommonName: "localhost"},
-		NotAfter:     time.Now().Add(time.Hour),
-		DNSNames:     []string{"localhost"},
-	}
-
-	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
-	cert, _ := x509.CreateCertificate(rand.Reader, template, template, &priv.PublicKey, priv)
-
-	tlsCfg := tls.Config{
-		Certificates: []tls.Certificate{
-			{
-				Certificate: [][]byte{cert},
-				PrivateKey:  priv,
-			},
-		},
-	}
-	return &tlsCfg
 }
