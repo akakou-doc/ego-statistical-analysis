@@ -1,3 +1,6 @@
+package main
+
+const HTML = `
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 
 <main>
@@ -19,8 +22,8 @@
     </form>
 
     <h2>Average Wieght</h2>
-    <p id="output">{{.average}}</p>
+    <p id="output">%v</p>
 </main>
 
 <script>
-</script>
+</script>`

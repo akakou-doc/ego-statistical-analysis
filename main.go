@@ -12,18 +12,16 @@ const attestationProviderURL = "https://shareduks.uks.attest.azure.net"
 const serverAddr = "0.0.0.0:8080"
 
 func baseEndPoint(c *gin.Context) {
+	var body string
 	avg := average()
-	msg := ""
 
 	if avg == 0 {
-		msg = "no all user's weights"
+		body = fmt.Sprintf(HTML, "no all user's weights")
 	} else {
-		msg = fmt.Sprintf("%v", avg)
+		body = fmt.Sprintf(HTML, avg)
 	}
 
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"average": msg,
-	})
+	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(body))
 }
 
 func updateEndPoint(c *gin.Context) {
@@ -35,9 +33,8 @@ func updateEndPoint(c *gin.Context) {
 
 	id, err := auth(name, password)
 	if err != nil {
-		c.String(400, "password not valid")
+		c.String(http.StatusUnauthorized, "password not valid")
 		return
-
 	}
 
 	update(id, weight)
@@ -46,7 +43,6 @@ func updateEndPoint(c *gin.Context) {
 
 func main() {
 	r := gin.Default()
-	r.LoadHTMLGlob("templates/*.html")
 
 	r.GET("/", baseEndPoint)
 	r.POST("/", updateEndPoint)
