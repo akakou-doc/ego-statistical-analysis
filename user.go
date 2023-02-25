@@ -50,3 +50,11 @@ func auth(name, password string) (int, error) {
 func update(id, weight int) {
 	users[id].weight = weight
 }
+
+// func print() {
+// 	for _, v := range users {
+// 		fmt.Printf("name: %v\n", v.name)
+// 		fmt.Printf("hashedPassword: %v\n", v.hashedPassword)
+// 		fmt.Printf("weight: %v\n\n", v.weight)
+// 	}
+// }
